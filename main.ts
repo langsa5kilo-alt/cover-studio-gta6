@@ -1,40 +1,35 @@
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { buildDossier } from './vendor/makefun-app.ts';
+import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { buildDossier } from "./vendor/makefun-frontend.ts";
 
-const DOSSIER_CAPS = {
+const limits = {
   text_max_bytes: 163840,
   screenshots: { max: 4, max_bytes: 262144 },
   app_max_files: 993,
   app_max_bytes: 50331648,
-  app_path_max_bytes: 1000,
+  app_path_max_bytes: 1000
 };
 
-function outputDirectory(): string {
-  const configured = process.env.MAKEFUN_OUTPUT_DIR;
-  return configured === undefined ? '/output' : configured;
-}
-
-function copyTree(source: string, destination: string): void {
-  mkdirSync(destination, { recursive: true });
-  for (const entry of readdirSync(source, { withFileTypes: true })) {
-    const from = join(source, entry.name);
-    const to = join(destination, entry.name);
-    if (entry.isDirectory()) copyTree(from, to);
-    else if (entry.isFile()) copyFileSync(from, to);
-    else throw new Error(`Cannot package unsupported entry: ${from}`);
+function copyDirectory(source: string, target: string): void {
+  mkdirSync(target, { recursive: true });
+  for (const item of readdirSync(source, { withFileTypes: true })) {
+    const sourcePath = join(source, item.name);
+    const targetPath = join(target, item.name);
+    if (item.isDirectory()) copyDirectory(sourcePath, targetPath);
+    else if (item.isFile()) copyFileSync(sourcePath, targetPath);
+    else throw new Error(`Unsupported package entry: ${sourcePath}`);
   }
 }
 
-const projectDirectory = dirname(fileURLToPath(import.meta.url));
-const destination = outputDirectory();
-
-try {
-  copyTree(join(projectDirectory, 'app'), join(destination, 'app'));
-  copyTree(join(projectDirectory, 'screenshots'), join(destination, 'screenshots'));
-  writeFileSync(join(destination, 'dossier.json'), buildDossier(destination, DOSSIER_CAPS));
-} catch (cause) {
-  const detail = cause instanceof Error ? cause.message : String(cause);
-  throw new Error(`Submission assembly failed for ${destination}: ${detail}`, { cause });
+function packageApp(): void {
+  const projectRoot = dirname(fileURLToPath(import.meta.url));
+  const outputRoot = process.env.MAKEFUN_OUTPUT_DIR || "/output";
+  mkdirSync(outputRoot, { recursive: true });
+  copyDirectory(join(projectRoot, "app"), join(outputRoot, "app"));
+  copyDirectory(join(projectRoot, "screenshots"), join(outputRoot, "screenshots"));
+  const dossier = buildDossier(outputRoot, limits);
+  writeFileSync(join(outputRoot, "dossier.json"), dossier);
 }
+
+packageApp();
