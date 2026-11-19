@@ -8,3 +8,19 @@ canvas {
 }
 
 body.demo-drag canvas { cursor: grabbing; }
+
+.export:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #ff3d8f66;
+}
+
+.panel-card:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+canvas:focus-visible {
+  outline: 3px solid #ff3d8f;
+  outline-offset: 4px;
+}

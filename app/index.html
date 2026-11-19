@@ -11,7 +11,7 @@
   <header>
     <a class="brand" href="#"><span>V</span> VANTA <i>Cover Studio</i></a>
     <div class="privacy"><b></b> LOCAL MODE <small>Your photos stay on this device</small></div>
-    <button class="export top-export" id="exportBtn">EXPORT PNG <kbd>↗</kbd></button>
+    <button class="export top-export" id="exportBtn" type="button">EXPORT PNG <kbd>↗</kbd></button>
   </header>
   <main>
     <aside class="rail">
@@ -39,7 +39,7 @@
     </section>
     <section class="stage">
       <div class="stage-head"><div><span class="live"><i></i> LIVE CANVAS</span><span id="dimensions">1080 × 1350</span></div><div class="zoom-ui"><button id="zoomMinus">−</button><span id="zoomLabel">100%</span><button id="zoomPlus">＋</button></div></div>
-      <div class="canvas-wrap" id="canvasWrap"><canvas id="cover" width="1080" height="1350" tabindex="0" aria-label="Cover preview. Drag to pan selected panel."></canvas><span class="drag-note">↕ DRAG TO REFRAME</span></div>
+      <div class="canvas-wrap" id="canvasWrap"><canvas id="cover" width="1080" height="1350" tabindex="0" aria-label="Cover preview. Panel 1 selected. Drag to pan, or use arrow keys to nudge; hold Shift for a larger step."></canvas><span class="drag-note">↕ DRAG · ARROWS NUDGE</span></div>
       <div class="format-row"><span>EXPORT SIZE</span><button class="format active" data-size="1080,1350">Portrait <b>4:5</b></button><button class="format" data-size="1080,1080">Square <b>1:1</b></button><button class="format" data-size="1200,630">Landscape <b>1.91:1</b></button></div>
     </section>
   </main>

@@ -347,24 +347,27 @@ function measuredText(context, text, x, y, size, tracking, align = "left") {
 
 function drawTypography(context, width, height) {
   const grade = GRADES[state.grade];
-  const band = context.createLinearGradient(0, height * 0.55, 0, height);
+  const band = context.createLinearGradient(0, height * 0.58, 0, height);
   band.addColorStop(0, "#100b1800");
-  band.addColorStop(0.45, "#100b1890");
-  band.addColorStop(1, "#08070ff5");
+  band.addColorStop(0.26, "#100b1866");
+  band.addColorStop(0.62, "#0c0915dc");
+  band.addColorStop(1, "#06060bfc");
   context.fillStyle = band;
-  context.fillRect(0, height * 0.5, width, height * 0.5);
+  context.fillRect(0, height * 0.58, width, height * 0.42);
   context.fillStyle = "#ffffff";
-  measuredText(context, state.upper, width * 0.07, height * 0.765, height * 0.018, height * 0.004);
+  measuredText(context, state.upper, width * 0.067, height * 0.748, height * 0.013, height * 0.0065);
   const titleSize = Math.min(height * 0.102, width / (Math.max(8, state.title.length) * 0.57));
   context.save();
   context.shadowColor = grade.mid;
   context.shadowBlur = height * (state.bloom / 100) * 0.018;
-  measuredText(context, state.title, width * 0.065, height * 0.895, titleSize, -titleSize * 0.045);
+  measuredText(context, state.title, width * 0.065, height * 0.875, titleSize, -titleSize * 0.075);
   context.restore();
   context.fillStyle = grade.light;
-  context.fillRect(width * 0.065, height * 0.925, width * 0.25, Math.max(3, height * 0.004));
+  context.fillRect(width * 0.065, height * 0.905, width * 0.25, Math.max(3, height * 0.004));
+  context.fillStyle = "#ffffff52";
+  context.fillRect(width * 0.065, height * 0.935, width * 0.87, Math.max(1, height * 0.001));
   context.fillStyle = "#ffffff";
-  measuredText(context, state.credit, width * 0.935, height * 0.962, height * 0.011, height * 0.002, "right");
+  measuredText(context, state.credit, width * 0.935, height * 0.968, height * 0.0105, height * 0.0022, "right");
   context.strokeStyle = "#ffffffaa";
   context.lineWidth = Math.max(2, width * 0.002);
   context.strokeRect(width * 0.025, height * 0.02, width * 0.95, height * 0.96);
@@ -399,6 +402,15 @@ function render() {
   renderTo(preview, cover.width, cover.height);
   updatePanelList();
   $("#zoomLabel").textContent = `${Math.round(state.panels[state.activePanel].zoom * 100)}%`;
+  cover.setAttribute("aria-label", `Cover preview. Panel ${state.activePanel + 1} selected. Drag to pan, or use arrow keys to nudge; hold Shift for a larger step.`);
+}
+
+function nudgeActivePanel(key, largeStep) {
+  const panel = state.panels[state.activePanel];
+  const distance = largeStep ? 12 : 3;
+  panel.panX += key === "ArrowLeft" ? -distance : key === "ArrowRight" ? distance : 0;
+  panel.panY += key === "ArrowUp" ? -distance : key === "ArrowDown" ? distance : 0;
+  render();
 }
 
 function updatePanelList() {
@@ -408,8 +420,22 @@ function updatePanelList() {
     const panel = state.panels[index];
     const card = document.createElement("div");
     card.className = `panel-card${index === state.activePanel ? " active" : ""}`;
+    card.tabIndex = 0;
+    card.setAttribute("role", "group");
+    card.setAttribute("aria-label", `Focus panel ${index + 1} for keyboard nudging`);
     card.innerHTML = `<span class="thumb"></span><span><b>PANEL ${String(index + 1).padStart(2, "0")}</b><small>${panel.image ? "Your local photo" : "Built-in sample image"}</small></span><button title="Reset panel">↺</button>`;
     card.addEventListener("click", () => { state.activePanel = index; render(); });
+    card.addEventListener("focus", () => {
+      state.activePanel = index;
+      $$(".panel-card").forEach((item, itemIndex) => item.classList.toggle("active", itemIndex === index));
+      cover.setAttribute("aria-label", `Cover preview. Panel ${index + 1} selected. Drag to pan, or use arrow keys to nudge; hold Shift for a larger step.`);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (!event.key.startsWith("Arrow")) return;
+      event.preventDefault();
+      nudgeActivePanel(event.key, event.shiftKey);
+      $$(".panel-card")[index].focus();
+    });
     $("button", card).addEventListener("click", (event) => {
       event.stopPropagation();
       Object.assign(panel, { panX: 0, panY: 0, zoom: 1 });
@@ -434,6 +460,7 @@ cover.addEventListener("pointerdown", (event) => {
   if (index >= 0) state.activePanel = index;
   state.drag = { x: event.clientX, y: event.clientY };
   cover.setPointerCapture(event.pointerId);
+  cover.focus();
   render();
 });
 cover.addEventListener("pointermove", (event) => {
@@ -456,11 +483,7 @@ cover.addEventListener("wheel", (event) => {
 cover.addEventListener("keydown", (event) => {
   if (!event.key.startsWith("Arrow")) return;
   event.preventDefault();
-  const panel = state.panels[state.activePanel];
-  const distance = event.shiftKey ? 10 : 3;
-  panel.panX += event.key === "ArrowLeft" ? -distance : event.key === "ArrowRight" ? distance : 0;
-  panel.panY += event.key === "ArrowUp" ? -distance : event.key === "ArrowDown" ? distance : 0;
-  render();
+  nudgeActivePanel(event.key, event.shiftKey);
 });
 
 function loadFiles(files) {
