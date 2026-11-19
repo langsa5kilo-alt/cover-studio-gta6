@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VANTA Cover Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="fit.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="#"><span>V</span> VANTA <i>Cover Studio</i></a>
+    <div class="privacy"><b></b> LOCAL MODE <small>Your photos stay on this device</small></div>
+    <button class="export top-export" id="exportBtn">EXPORT PNG <kbd>↗</kbd></button>
+  </header>
+  <main>
+    <aside class="rail">
+      <button class="rail-tab active" data-tab="layout"><span>▦</span>Layout</button>
+      <button class="rail-tab" data-tab="photos"><span>◫</span>Photos</button>
+      <button class="rail-tab" data-tab="type"><span>Tt</span>Type</button>
+      <button class="rail-tab" data-tab="grade"><span>◒</span>Grade</button>
+    </aside>
+    <section class="controls">
+      <div class="pane active" data-pane="layout">
+        <label class="eyebrow">COMPOSITION</label><h2>Choose a layout</h2>
+        <div class="layouts">
+          <button class="layout active" data-layout="triple"><i class="mini triple"></i><b>Three panel</b><small>Classic cover</small></button>
+          <button class="layout" data-layout="double"><i class="mini double"></i><b>Two panel</b><small>Split scene</small></button>
+          <button class="layout" data-layout="single"><i class="mini single"></i><b>Full bleed</b><small>Hero portrait</small></button>
+        </div>
+        <div class="section-head"><div><label class="eyebrow">PANEL PHOTOS</label><h2>Build your scene</h2></div><span class="counter">3 / 3</span></div>
+        <label class="drop" id="dropzone"><input id="fileInput" type="file" accept="image/*" multiple><span class="plus">＋</span><b>Drop photos here</b><small>or click to browse · JPG, PNG, WEBP</small></label>
+        <div id="panelList"></div>
+        <div class="tip"><b>TIP</b><span>Drag directly on the cover to reposition. Scroll to zoom. Arrow keys nudge.</span></div>
+      </div>
+      <div class="pane" data-pane="photos"><label class="eyebrow">YOUR PHOTOS</label><h2>Local image tray</h2><p class="muted">Add up to three images. They are decoded in this browser and never uploaded.</p><label class="drop compact" for="fileInput"><span class="plus">＋</span><b>Add photos</b></label><div id="photoTray"></div></div>
+      <div class="pane" data-pane="type"><label class="eyebrow">POSTER TYPE</label><h2>Make it yours</h2><label class="field">UPPER LINE<input id="upper" value="A SUNSET STORY"></label><label class="field">MAIN TITLE<input id="title" value="VICE NIGHTS" maxlength="24"></label><label class="field">CREDIT LINE<input id="credit" value="A VANTA ORIGINAL · MMXXVI"></label><p class="muted">Lettering is drawn directly into the export with measured spacing.</p></div>
+      <div class="pane" data-pane="grade"><label class="eyebrow">COLOR DIRECTION</label><h2>Set the atmosphere</h2><div class="grades" id="grades"></div><div class="sliders"><label>Bloom <output id="bloomOut">38</output><input id="bloom" type="range" min="0" max="100" value="38"></label><label>Film grain <output id="grainOut">22</output><input id="grain" type="range" min="0" max="60" value="22"></label></div><div class="tip"><b>GRADE</b><span>Color, bloom and grain are applied across the complete composition.</span></div></div>
+    </section>
+    <section class="stage">
+      <div class="stage-head"><div><span class="live"><i></i> LIVE CANVAS</span><span id="dimensions">1080 × 1350</span></div><div class="zoom-ui"><button id="zoomMinus">−</button><span id="zoomLabel">100%</span><button id="zoomPlus">＋</button></div></div>
+      <div class="canvas-wrap" id="canvasWrap"><canvas id="cover" width="1080" height="1350" tabindex="0" aria-label="Cover preview. Drag to pan selected panel."></canvas><span class="drag-note">↕ DRAG TO REFRAME</span></div>
+      <div class="format-row"><span>EXPORT SIZE</span><button class="format active" data-size="1080,1350">Portrait <b>4:5</b></button><button class="format" data-size="1080,1080">Square <b>1:1</b></button><button class="format" data-size="1200,630">Landscape <b>1.91:1</b></button></div>
+    </section>
+  </main>
+  <div class="toast" id="toast">PNG saved to your downloads</div>
+  <div class="export-view" id="exportView"><button id="closeExport">×</button><div><label>EXPORT PREVIEW · 1080 × 1350 PNG</label><img id="exportImage" alt="Exported poster preview"><h3>Ready to share.</h3><p>Full-resolution art, rendered locally.</p></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
